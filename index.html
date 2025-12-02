@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seed Paths Unity — Россия</title>
+
+<style>
+    :root {
+        --bg: #0c0f17;
+        --fg: #e6e6e6;
+        --accent: #8ab4ff;
+        --accent2: #6dd4a8;
+    }
+    body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: system-ui, sans-serif;
+        overflow: hidden;
+    }
+
+    /* Splash Screen */
+    #splash {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        background: var(--bg);
+        opacity: 1;
+        animation: splashFade 1.8s ease forwards;
+    }
+    @keyframes splashFade {
+        0% { opacity: 0; }
+        100% { opacity: 1; }
+    }
+    h1 {
+        font-weight: 500;
+        font-size: 2.2rem;
+        margin-bottom: 0.4em;
+        text-align: center;
+    }
+    .subtitle {
+        opacity: 0.7;
+        text-align: center;
+        margin-bottom: 2em;
+    }
+
+    /* Choice Menu */
+    #menu, #storyPage {
+        display: none;
+        position: absolute;
+        inset: 0;
+        padding: 20px;
+        animation: fadeIn 1s ease forwards;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+    }
+
+    .choiceBtn {
+        display: block;
+        padding: 14px 16px;
+        margin: 10px auto;
+        max-width: 360px;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.12);
+        color: var(--fg);
+        cursor: pointer;
+        transition: 0.3s;
+        border-radius: 10px;
+        text-align: center;
+    }
+    .choiceBtn:hover {
+        background: rgba(255,255,255,0.14);
+    }
+
+    /* Page-turn animation */
+    .pageTurn {
+        animation: turnPage 0.7s ease forwards;
+    }
+    @keyframes turnPage {
+        0% { transform: rotateY(0); opacity: 1; }
+        50% { transform: rotateY(-80deg); opacity: 0.4; }
+        100% { transform: rotateY(-180deg); opacity: 1; }
+    }
+
+    /* Story Text */
+    #storyText {
+        max-width: 700px;
+        margin: 0 auto;
+        line-height: 1.6;
+        font-size: 1.15rem;
+        padding-top: 30px;
+    }
+
+    /* Back button */
+    #backBtn {
+        margin-top: 25px;
+        padding: 10px 14px;
+        border-radius: 8px;
+        border: 1px solid rgba(255,255,255,0.2);
+        background: rgba(255,255,255,0.05);
+        color: var(--fg);
+        cursor: pointer;
+        display: inline-block;
+    }
+</style>
+
+<script>
+/* ==========================================================
+   IndexedDB State Persistence
+   ========================================================== */
+let db;
+const DB_NAME = "seed_paths_unity_ru";
+const STORE = "state";
+
+function initDB() {
+    return new Promise((resolve) => {
+        const req = indexedDB.open(DB_NAME, 1);
+        req.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            db.createObjectStore(STORE);
+        };
+        req.onsuccess = (e) => {
+            db = e.target.result;
+            resolve();
+        };
+    });
+}
+
+function saveState(key, value) {
+    const tx = db.transaction(STORE, "readwrite");
+    tx.objectStore(STORE).put(value, key);
+}
+
+function loadState(key) {
+    return new Promise((resolve) => {
+        const tx = db.transaction(STORE, "readonly");
+        const req = tx.objectStore(STORE).get(key);
+        req.onsuccess = () => resolve(req.result);
+    });
+}
+
+/* ==========================================================
+   UI Navigation
+   ========================================================== */
+function showMenu() {
+    document.getElementById("splash").style.display = "none";
+    document.getElementById("menu").style.display = "block";
+}
+
+function openStory(id) {
+    const page = document.getElementById("storyPage");
+    const text = document.getElementById("storyText");
+
+    page.classList.remove("pageTurn");
+
+    const pages = {
+        "canopy": `
+            В вашем городе воздух тяжелеет летом, а жара держится дольше, чем раньше. 
+            Учёные называют это «островами тепла», но жители знают другое: 
+            тень — это спасение. 
+            <br><br>
+            Вы выбираете путь восстановления через высадку городских зелёных коридоров —
+            от школ до жилых кварталов.
+        `,
+
+        "seedpaths": `
+            Дети идут в школу по серым улицам, где когда-то были сады. 
+            Вы решаете восстановить «семенные тропы» — живые маршруты, 
+            где появляются ягодные кусты, плодовые деревья и цветы, 
+            возвращающие в город запахи и жизнь.
+        `,
+
+        "dnieper": `
+            Великая река Днепр течёт через разные земли, не выбирая сторону. 
+            Она зовёт к совместному восстановлению: чистые берега, 
+            водно-болотные угодья, природные фильтры, общие стандарты мониторинга. 
+            Река помнит нас как один водосбор, а не как врагов.
+        `
+    };
+
+    text.innerHTML = pages[id] || "Страница не найдена.";
+
+    page.style.display = "block";
+    void page.offsetWidth;
+    page.classList.add("pageTurn");
+
+    saveState("lastPage", id);
+}
+
+function goBack() {
+    document.getElementById("storyPage").style.display = "none";
+    document.getElementById("menu").style.display = "block";
+}
+</script>
+
+</head>
+<body>
+
+<!-- SPLASH SCREEN -->
+<div id="splash">
+    <h1>Seed Paths Unity — Россия</h1>
+    <div class="subtitle">
+        Экологические каскады восстановления<br>
+        Интерактивная история · Ветвящиеся решения · Миссия будущего
+    </div>
+    <button class="choiceBtn" onclick="showMenu()">Войти</button>
+</div>
+
+<!-- MAIN MENU -->
+<div id="menu">
+    <h1 style="text-align:center;">Выберите направление</h1>
+
+    <button class="choiceBtn" onclick="openStory('canopy')">
+        Городские зелёные коридоры
+    </button>
+
+    <button class="choiceBtn" onclick="openStory('seedpaths')">
+        Семенные тропы для детей
+    </button>
+
+    <button class="choiceBtn" onclick="openStory('dnieper')">
+        Днепровский экологический путь
+    </button>
+</div>
+
+<!-- STORY PAGE -->
+<div id="storyPage">
+    <div id="storyText"></div>
+    <div style="text-align:center;">
+        <button id="backBtn" onclick="goBack()">Назад</button>
+    </div>
+</div>
+
+<script>
+/* ==========================================================
+   Restore last visited page
+   ========================================================== */
+initDB().then(async () => {
+    const last = await loadState("lastPage");
+    if (last) {
+        document.getElementById("splash").style.display = "none";
+        openStory(last);
+    }
+});
+</script>
+
+</body>
+</html>
