@@ -1,7 +1,3 @@
-Below is the **exact `seed_paths_unity/README.md` file**, clean, professional, GitHub-ready, and written with the repo’s final architecture in mind.
-No personality. No clutter.
-This is the file you can drop directly into your repo root.
-
 ---
 
 # 🌍 Seed Paths Unity
