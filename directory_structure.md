@@ -1,9 +1,12 @@
 seed_paths_unity/
 │
-├── README.md                 # Global table of contents + language selector
-├── lang_redirect.js          # Auto-detect browser language & redirect
+├── index.html
+│      └── Self-contained language redirect (ru → /ru/, uk/ua → /ua/, others → /en/)
 │
-├── ru/                       # Russian: default for Russian-language browsers
+├── README.md
+│      └── Global overview, mission, table of contents.
+│
+├── ru/                       # Russian-language module
 │   ├── index.html
 │   ├── 00_intro_splash/
 │   │   └── index.html
@@ -47,8 +50,7 @@ seed_paths_unity/
 │       │   └── index.html
 │       └── index.html
 │
-│
-├── ua/                       # Ukrainian: default for Ukrainian-language browsers
+├── ua/                       # Ukrainian-language module
 │   ├── index.html
 │   ├── 00_intro_splash/
 │   │   └── index.html
@@ -92,8 +94,7 @@ seed_paths_unity/
 │       │   └── index.html
 │       └── index.html
 │
-│
-└── en/                       # English: universal fallback & research mode
+└── en/                       # English-language global module
     ├── index.html
     ├── 00_intro_splash/
     │   └── index.html
